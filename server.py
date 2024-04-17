@@ -75,7 +75,8 @@ def start_server():
         print("\n\t1. Emparejar (FCM)")
         print("\t2. Enviar mensaje (RM)")
         print("\t3. Leer mensajes")
-        print("\t5. Salir")
+        print("\t4. Generar nuevas llaves (KUM)")
+        print("\t5. Salir (LCM)")
         option = input("Elige una opción: ")
         if option == '1':
             resultEmparejamiento = emparejar(conn,received_messages,p,s)
@@ -153,6 +154,28 @@ def start_server():
                     print("Bandeja de entrada vacia")
             else:
                 print("No hay mensajes nuevos")
+        elif option == '4':
+            print ("Generar nuevas llaves")
+            resultEmparejamiento = emparejar(conn,received_messages,p,s)
+            if resultEmparejamiento[0] == 0: #si es 0, la conexion la empieza el server, ´por lo tanto q entra 
+                data = conn.recv(1024)
+                data_arr = pickle.loads(data)
+                received_messages.append(data_arr)
+                q  = received_messages[0]
+                p = resultEmparejamiento[1]
+                s = resultEmparejamiento[2]
+                print ("El valor de Q recibido de cliente es: ", q)
+                
+            else:#si no es 0  es porque cliente empezo el FCM, y q se genera en server
+                q = resultEmparejamiento[0]
+                p = resultEmparejamiento[1]
+                s = resultEmparejamiento[2]
+                print ("El valor de Q generado en server es: ", q) 
+            
+            keys= generadorLlaves.generate_keys(p,q,s,50)  
+            for i, key in enumerate(keys):
+                print(f"Key {i+1}: {key}")
+            received_messages.clear()
         elif option == '5':
             print(f"p: {p}\nq:{q}\ns: {s}")
             print("Borrando llaves y primos...")

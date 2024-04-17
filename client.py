@@ -47,7 +47,6 @@ def enviarMensaje(conn,mensajeEncriptado):
     data_string = pickle.dumps(mensajeEncriptado)
     conn.send(data_string)
 def start_client():
-    
     psn=""
     p=0
     q=0
@@ -65,7 +64,8 @@ def start_client():
         print("\n\t1. Emparejar (FCM)")
         print("\t2. Enviar mensaje (RM)")
         print("\t3. Leer mensajes")
-        print("\t5. Salir")
+        print("\t4. Generar nuevas llaves (KUM)")
+        print("\t5. Salir (LCM)")
         option = input("Elige una opción: ")
         if option == '1':
             resultEmparejamiento = emparejar(client_socket,received_messages,p,s)
@@ -139,6 +139,29 @@ def start_client():
                     print("Bandeja de entrada vacia")
             else:
                 print("No hay mensajes nuevos")
+        elif option == '4':
+            print ("Generar nuevas llaves")
+            resultEmparejamiento = emparejar(client_socket,received_messages,p,s)
+            #recibe q (distinto de 0) si el emparejamiento lo empezo el server
+            #recibe 1 si el emparejamiento lo empezo el cliente
+            if resultEmparejamiento[0] == 1:
+                data = client_socket.recv(1024)
+                data_arr = pickle.loads(data)
+                received_messages.append(data_arr)
+                q=received_messages[0]
+                #q = str(received_messages)
+                print ("El valor de Q recibido de server es: ",q)
+                p = resultEmparejamiento[1]
+                s = resultEmparejamiento[2]
+            else:#si no es 0  es porque cliente empezo el FCM, y q se genera en server
+                q = resultEmparejamiento[0]
+                p = resultEmparejamiento[1]
+                s = resultEmparejamiento[2]
+                print ("El valor de Q generado en cliente es: ",q)
+            keys= generadorLlaves.generate_keys(p,q,s,50)  
+            for i, key in enumerate(keys):
+                print(f"Key {i+1}: {key}")
+            received_messages.clear()
         elif option == '5':
             print(f"p: {p}\nq: {q}\ns: {s}")
             time.sleep(0.5)
