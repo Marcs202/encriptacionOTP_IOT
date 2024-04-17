@@ -37,14 +37,15 @@ keys = generate_keys(p, q, s, 50)
 
 for i, key in enumerate(keys):
     print(f"Key {i+1}: {key}")
-
+"""
 #####! Definicion de funciones reversibles 
 ##? Funcion 1, XOR
  ##?para todas las funciones f1,f2,f3,f4, se capturara el mensaje
  ##? y se va a convertir las letras en codigo ASCII para que al array resultante se
  ##? se le apliquen las funciones reversibles
-def fn1(message, key):
-    mensaje_encriptado = [m ^ key for m in message] # el operador ^ es el XOR 
+def fn1(mensaje, key):
+    mensajeA = [ord(c) for c in mensaje]
+    mensaje_encriptado = [m ^ key for m in mensajeA] # el operador ^ es el XOR 
     return mensaje_encriptado
 
 def fn1D(encrypted_message, key):
@@ -54,8 +55,6 @@ def fn1D(encrypted_message, key):
     return mensaje_desencriptado    
 
 mensaje = input("Ingrese el mensaje a encriptar: \n \t--> ")
-mensaje = [ord(c) for c in mensaje]
-
 mensaje_encriptado = fn1(mensaje,keys[1])
 print("Mensaje encriptado: ", mensaje_encriptado)
 mensaje_desencriptado = fn1D(mensaje_encriptado,keys[1])
@@ -132,10 +131,35 @@ def fn4D(encrypted_message, key):
     mensaje_desencriptado = [bit_inversion(em) ^ key for em in encrypted_message]
     mensaje_desencriptado = ''.join(chr(i) for i in mensaje_desencriptado)
     return mensaje_desencriptado
+"""
+def obtener_bits_menos_significativos(s):
+    # Convertir string a bits
+    bits = ''.join(format(ord(i), '08b') for i in s)
+    
+    # Obtener los 4 bits menos significativos
+    bits_menos_significativos = bits[-4:]
+    
+    return bits_menos_significativos
+
+# Probar la función con un string
+
 
 
 mensaje = input("Ingrese el mensaje a encriptar: \n \t--> ")
-mensaje_encriptado = fn4(mensaje,keys[1])
+print(f"Los 4 bits menos significativos del string '{mensaje}' son: {obtener_bits_menos_significativos(mensaje)}")
+psn = obtener_bits_menos_significativos(mensaje)
+mensaje_encriptado = fn1(mensaje,keys[1])
 print("Mensaje encriptado: ", mensaje_encriptado)
-mensaje_desencriptado = fn4D(mensaje_encriptado,keys[1])
+mensaje_desencriptado = fn1D(mensaje_encriptado,keys[1])
 print ("Mensaje desencriptado: ", mensaje_desencriptado)
+
+if psn == '0000' or psn == '1111' or psn == '1110' or psn == '0001':
+    #ejecutar f1->f2->f3->f4
+    print(f"Los bits menos significativos del string son: {psn}") 
+elif psn == '0010' or psn == '1101' or psn == '0011' or psn == '1100':
+    print(f"Los bits menos significativos del string son: {psn}") 
+elif psn == '0100' or psn == '1011' or psn == '0101' or psn == '1010':
+    print(f"Los bits menos significativos del string son: {psn}") 
+elif psn == '0110' or psn == '0111' or psn == '1000' or psn == '1001':
+    print(f"Los bits menos significativos del string son: {psn}") 
+
